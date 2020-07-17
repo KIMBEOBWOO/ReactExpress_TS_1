@@ -1,48 +1,49 @@
-import React,{Component, useState} from 'react'
+import React,{Component, useState, useEffect} from 'react'
 import { Link } from 'react-router-dom'
-//import { reqSignup } from '../services/axios'
-//import { response } from 'express';
-import axios from 'axios'
-import history from '../history'
 
-const Signup = () =>{
+import history from '../history'
+import { usePostRequest } from '../utils'
+
+interface user{
+    id : string;
+    pw : string;
+    name : string;
+}
+
+interface props{
+    isLogined : boolean;
+    handleLoginCheck : (check:boolean)=>void;
+    handleAuthPage : (isLoginPage:boolean)=>void;
+}
+
+function Signup(props:props):JSX.Element{
+    const {success,doPostRequest,data} = usePostRequest<user,boolean>(
+        '/signup',
+        ()=>{
+                handleAuthPage(true);
+                handleLoginCheck(true);
+        },
+        ()=>{
+            console.log("[SIGNUP ERROR] Try Other ID")
+        }
+    );
+
     const [user, setUserInfo] = useState({
         id : "",
         pw : "",
         name : ""
     });
-
-    const [result , setResult] = useState({
-      isSignupSuccess : false
-    });
-
+    const {isLogined,handleLoginCheck,handleAuthPage} = props;
+    const [result , setResult] = useState(false);
     const {id,pw,name} = user;
-    const {isSignupSuccess} = result;
 
     const onClick = (e:any) =>{
-        console.log("start axios");
-        
-        axios.post('/users/signup',{
-            userInfo:{
-                id : user.id,
-                pw : user.pw,
-                name : user.name
-            }
-        })
-        .then(response=>{
-            console.log(response.data);
-            if(response.data.result){
-                setResult({
-                    isSignupSuccess:true
-                });
-                console.log("go to login");
-                history.replace('/');
-            }
-        });
+        doPostRequest(user);
+        history.replace('/');
         setUserInfo({
-          id:"",
-          pw:"",
-          name:""
+            id : "",
+            pw : "",
+            name : ""
         });
     }
 
@@ -55,6 +56,10 @@ const Signup = () =>{
 
         console.log(value);
     };
+
+    const onClickSignup = (e:any) =>{
+        handleAuthPage(true);
+    }
 
     return(
         <div>
@@ -82,12 +87,9 @@ const Signup = () =>{
             <button onClick={onClick}>submit</button>
             <br/>
             <br/>
-            <Link to='/'>
+            <Link to='/' onClick={onClickSignup}>
                 Home
             </Link>
-            <div>
-              {isSignupSuccess?<h2>signup true</h2>:<h2>signup false</h2>}
-            </div>
         </div>
     )
 }

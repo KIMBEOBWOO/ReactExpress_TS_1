@@ -1,41 +1,27 @@
-import React,{Component, useState, useEffect} from 'react'
-import { Link } from 'react-router-dom'
-import axios from 'axios';
+import React,{useEffect} from 'react'
+import {Home} from '../pages'
+import {useLoginCheck,useHeaderMessage} from '../utils';
+import Header from './Header';
+import Auth from './Auth';
 
-import {Home,Login,Signup} from '../pages'
-import {createStore} from 'redux'
-import {rootReducer} from '../utils/index'
+function Main(){
+    const {isLogined , handleLoginCheck} = useLoginCheck();   
+    const {caseNum , handleHeaderMessage} = useHeaderMessage();
 
-const store = createStore(rootReducer);
-
-// 커스텀 훅 작성
-function useLoginCheck(){
-    const [result,setResult] = useState({
-        isLogined : false
-    });
-   
-    function handleLoginCheck(check:boolean):any{
-        setResult({
-            isLogined:check
-        });
-    };
-
-    return {result , handleLoginCheck};
-}
-
-const Main = () =>{
-    const {result , handleLoginCheck} = useLoginCheck();   
-
-    console.log(result);
     useEffect(()=>{
-        handleLoginCheck(result.isLogined);  
-    },[result.isLogined]);
-    
+        handleLoginCheck(isLogined);  
+        console.log(isLogined + " in Main Component");
+    },[isLogined,handleLoginCheck]);    
+
+    useEffect(()=>{
+        handleHeaderMessage(10);
+    },[]);
+
     return(
         <div>
-            <h1>Main Page</h1>
-            <hr></hr>
-            {result.isLogined? <Home/> : <Login  result={result} handleLoginCheck={handleLoginCheck}/>}
+            <Header isLogined={isLogined} handleLoginCheck={handleLoginCheck} handleHeaderMessage={handleHeaderMessage}/>   
+            {isLogined? <Home isLogined={isLogined} handleLoginCheck={handleLoginCheck} handleHeaderMessage={handleHeaderMessage}/> 
+                    : <Auth  isLogined={isLogined} handleLoginCheck={handleLoginCheck} handleHeaderMessage={handleHeaderMessage}/>}
         </div>
     );
 }

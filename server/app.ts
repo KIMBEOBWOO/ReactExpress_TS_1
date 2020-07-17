@@ -19,8 +19,7 @@ import path from 'path'
 import createError from 'http-errors';
 import session from 'express-session';
 import passport from 'passport';
-import passportConfig from './passport/passport';
-
+//import passportConfig from './passport/passport';
 import usersRouter from './routes/users';
 import indexRouter from './routes/index';
 
@@ -34,6 +33,15 @@ class ServerApi{
   }
 
   private initializeAppSettings():void{
+    this.app.use(session({
+      secret:"beobwoo",
+      resave:false,
+      saveUninitialized: false,
+      cookie:{
+        
+      }
+    }));
+
     this.app.use(logger('dev'));
     this.app.use(express.json());
     this.app.use(bodyParser.json());
@@ -46,7 +54,7 @@ class ServerApi{
     this.app.use(session({ secret: '비밀코드', resave: true, saveUninitialized: false }));
     this.app.use(passport.initialize()); // passport 구동
     this.app.use(passport.session()); // 세션 연결
-    passportConfig();
+  
   }
 
   private initializeRouters():void{

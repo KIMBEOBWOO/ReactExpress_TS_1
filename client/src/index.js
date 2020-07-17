@@ -8,7 +8,6 @@ import history from './history';
 
 ReactDOM.render(
   <BrowserRouter history={history}>
-      <Header/>
       <Route exact path='/' component={Main}></Route>
       <Route path='/signup' component={Signup}></Route>  
   </BrowserRouter>,

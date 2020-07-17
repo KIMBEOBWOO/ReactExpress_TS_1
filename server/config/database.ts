@@ -14,7 +14,7 @@ module.exports = function(){
         },
         
         // test open 을 사용함으로 mysql connection error check
-        test_open: function (con) {
+        test_open: function (con: { connect: (arg0: (err: any) => void) => void; }) {
           con.connect(function (err) {
             if (err) {
               console.error('mysql connection error :' + err);
@@ -22,6 +22,11 @@ module.exports = function(){
               console.info('mysql is connected successfully.');
             }
           })
+        },
+          /*
+        close:function(con: { connect: (arg0: (err: any) => void) => void; }){
+          con.disconnect();
         }
-      }
+        */
+    }
 };

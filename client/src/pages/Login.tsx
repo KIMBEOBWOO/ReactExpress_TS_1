@@ -1,22 +1,44 @@
 import React,{Component, useState, Dispatch, SetStateAction, useEffect} from 'react'
 import { Link } from 'react-router-dom'
-import axios from 'axios';
+
+import {usePostRequest} from '../utils';
+
 
 interface Props{
-    result : object;
-    handleLoginCheck : (check:boolean)=>any;
+    isLogined : boolean;
+    handleLoginCheck : (check:boolean)=>void;
+    handleAuthPage : (isLoginPage:boolean)=>void;
+    handleHeaderMessage : (caseNUm:number,user?:string) => string;
 }
 
-function Login(props:Props){
+interface user{
+    id : string;
+    pw : string;
+}
+
+function Login(props:Props):JSX.Element{
+
+    const {success,doPostRequest,data} = usePostRequest<user,boolean>(
+        '/login',
+        ()=>{
+            handleLoginCheck(true);
+        },
+        /*
+        ()=>{
+            console.log("Login Component FailCallback")
+            handleLoginCheck(false);
+            handleHeaderMessage(2);
+        }
+        */
+    );
+
     const [user, setUserInfo] = useState({
         id : "",
         pw : ""
     });
-    
-    const {result,handleLoginCheck} = props;
-    
+    const {isLogined,handleLoginCheck,handleAuthPage,handleHeaderMessage} = props;
     const {id,pw} = user;
-    
+
     const onChange = (e:any) =>{
         const {value,name} = e.target;
         setUserInfo({
@@ -25,25 +47,17 @@ function Login(props:Props){
         });
     };
 
-    const onClick = (e:any) =>{
-        axios.post('/users/login',{
-            userInfo:{
-                id:String(id),
-                pw:String(pw)
-            }
-        })
-        .then(response=>{
-            console.log(response);
-            if(response.data.result){
-                handleLoginCheck(true);
-            }
-        });
-        
+    const onClickLogin = (e:any) =>{
+        doPostRequest({id:id,pw:pw});
         setUserInfo({
-          id:"",
-          pw:""
-        });
+            id:"",
+            pw:""
+          });
     };
+
+    const onClickSignup = (e:any) =>{
+        handleAuthPage(false);
+    }
 
     return(
         <div>
@@ -62,10 +76,10 @@ function Login(props:Props){
                 onChange={onChange}
                 placeholder="PW"/>
             
-            <button onClick={onClick}>submit</button>
+            <button onClick={onClickLogin}>submit</button>
             <br/>
             <br/>
-            <Link to='/signup'>
+            <Link onClick={onClickSignup} to='/'>
                 signup
             </Link>
         </div>
