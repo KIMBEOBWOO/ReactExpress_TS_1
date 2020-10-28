@@ -41,6 +41,7 @@ class ServerApi{
         
       }
     }));
+    this.app.engine('html', require('ejs').renderFile);
 
     this.app.use(logger('dev'));
     this.app.use(express.json());
@@ -54,7 +55,6 @@ class ServerApi{
     this.app.use(session({ secret: '비밀코드', resave: true, saveUninitialized: false }));
     this.app.use(passport.initialize()); // passport 구동
     this.app.use(passport.session()); // 세션 연결
-  
   }
 
   private initializeRouters():void{
@@ -94,44 +94,3 @@ class ServerApi{
 }
 
 module.exports = ServerApi;
-
-/*
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
-app.use(logger('dev'));
-app.use(express.json());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended : false}));
-
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
-
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
-
-
-app.listen(PORT,()=>{
-  console.log(`server listening on ${PORT}`);
-});
-
-module.exports = app;
-*/
